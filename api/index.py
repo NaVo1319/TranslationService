@@ -4,13 +4,20 @@ import json
 import translators as ts # Переводим текст
 import time
 class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        self.wfile.write('<html><head><meta charset="utf-8">'.encode())
-        self.wfile.write('<title>Простой HTTP-сервер.</title></head>'.encode())
-        self.wfile.write('<body>Был получен GET-запрос.</body></html>'.encode())
+	def do_GET(self):
+		s = self.path
+		dic = dict(parse.parse_qsl(parse.urlsplit(s).query))
+		self.send_response(200)
+		self.send_header('Content-type','text/plain')
+		self.end_headers()
+
+		if "name" in dic:
+			message = "Hello, " + dic["name"] + "!"
+		else:
+			message = "Hello, stranger!"
+
+		self.wfile.write(message.encode())
+		return
     def do_POST(self):
         content_len = self.rfile.read(int(self.headers.get('Content-Length')))
         content = json.loads(content_len)
