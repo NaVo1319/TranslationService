@@ -18,6 +18,7 @@ class handler(BaseHTTPRequestHandler):
         content_len = self.rfile.read(int(self.headers.get('Content-Length')))
         content = json.loads(content_len)
         file = gTTS(text=content['text'], lang=content['lang'], slow=False)
+        file.save("speech.mp3")
         self.send_response(200)
         self.send_header("Content-type", "audio/mpeg")
         self.end_headers()
