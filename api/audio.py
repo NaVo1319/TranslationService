@@ -21,4 +21,5 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "audio/mpeg")
         self.end_headers()
-        self.wfile.write(file.read())
+        with open('./speech.mp3', 'rb') as file:
+            self.wfile.write(file.read())
