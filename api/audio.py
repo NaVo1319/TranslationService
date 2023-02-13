@@ -17,7 +17,6 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_len = self.rfile.read(int(self.headers.get('Content-Length')))
         content = json.loads(content_len)
-        self.red.set(int(time.time()), content['text'])
         file = gTTS(text=content['text'], lang=content['lang'], slow=False)
         file.save("speech.mp3")
         self.send_response(200)
