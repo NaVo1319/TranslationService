@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 from urllib import parse
 import json
-import translators as ts # Переводим текст
+from deep_translator import GoogleTranslator
 import time
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
