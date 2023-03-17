@@ -27,17 +27,13 @@ class handler(BaseHTTPRequestHandler):
             errors.join("tag 'text' does not exist\n")
         if 'from' in content:
             check += 1
-            if content['from'] in GoogleTranslator.get_supported_languages():
-                check += 1
-            else:
-                errors.join("Error: tag «from» incorrect\n")
         else:
             errors.join("Error: tag «from» does not exist\n")
         if 'to' in content:
             check += 1
         else:
             errors.join("Error: tag «from» does not exist\n")
-        if (check == 5):
+        if (check == 4):
             mytext = GoogleTranslator(source=content['from'], target=content['to']).translate(content['text'])
             self.send_response(200)
             self.send_header("Content-type", "text/html")
