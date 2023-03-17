@@ -6,22 +6,49 @@ import time
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         s = self.path
-        dic = dict(parse.parse_qsl(parse.urlsplit(s).query))
         self.send_response(200)
         self.send_header('Content-type','text/plain')
         self.end_headers()
-        if "name" in dic:
-            message = "Hello, " + dic["name"] + "!"
-        else:
-            message = "Hello, stranger!"
-
+        message = "Server is ok"
         self.wfile.write(message.encode())
         return
     def do_POST(self):
         content_len = self.rfile.read(int(self.headers.get('Content-Length')))
         content = json.loads(content_len)
-        mytext = ts.google(content['text'], from_language=content['from'], to_language=content['to'])
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        self.wfile.write(mytext.encode())
+        check = 0
+        errors = ""
+        if 'text' in content:
+            check += 1
+            if len(content['text']) <= 100:
+                check += 1
+            else:
+                errors.join("Error: content length incorrect\n")
+        else:
+            errors.join("tag 'text' does not exist\n")
+        if 'from' in content:
+            check += 1
+            if content['from'] in GoogleTranslator.get_supported_languages():
+                check += 1
+            else:
+                errors.join("Error: tag «from» incorrect\n")
+        else:
+            errors.join("Error: tag «from» does not exist\n")
+        if 'to' in content:
+            check += 1
+            if content['to'] in GoogleTranslator.get_supported_languages():
+                check += 1
+            else:
+                errors.join("Error: tag «to» incorrect\n")
+        else:
+            errors.join("Error: tag «from» does not exist\n")
+        if (check == 6):
+            mytext = GoogleTranslator(source=content['from'], target=content['to']).translate(content['text'])
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(mytext.encode())
+        else:
+            self.send_response(500)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(errors)
